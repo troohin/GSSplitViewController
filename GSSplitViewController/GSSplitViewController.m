@@ -92,6 +92,26 @@ NSString * const GSSplitViewControllerDidHideMasterPaneNotification = @"com.goss
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor colorWithRed:142.0f/255.0f green:142.0f/255.0f blue:147.0f/255.0f alpha:1.0f];
     
+    UIViewController *master = [self.viewControllers objectAtIndex:0];
+    UIViewController *detail = [self.viewControllers objectAtIndex:1];
+    
+    // add the detail view
+    [self addDetailViewController:detail];
+    
+    // add the master view
+    [self addMasterViewController:master];
+    
+    // add the divider as a subview
+    [self.view addSubview:self.dividerView];
+    
+    if ([self masterPaneCanBePresentedInOrientation:GS_STATUS_BAR_ORIENTATION()]) {
+        
+        // ensure that the master is visible according to the 'isMasterPaneShown...' property
+        _isMasterVisible = self.isMasterPaneShownOnInitialRotationToPortrait;
+        
+        // ensure that the delegate has a chance to add a bar button item if the view will be laid out in portrait
+        [self splitViewWillRotateToPortraitOrientation];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -105,33 +125,7 @@ NSString * const GSSplitViewControllerDidHideMasterPaneNotification = @"com.goss
     [super viewWillLayoutSubviews];
     
     if (!_didLayoutViewControllers) {
-        
-        // this is the initial layout of the split view controllers view controllers, subsequent layouts will consist only of frame changes.
-        
-        UIViewController *master = [self.viewControllers objectAtIndex:0];
-        UIViewController *detail = [self.viewControllers objectAtIndex:1];
-        
-        // add the detail view
-        [self addDetailViewController:detail];
-        
-        // add the master view
-        [self addMasterViewController:master];
-        
-        // add the divider as a subview
-        [self.view addSubview:self.dividerView];
-        
-        if ([self masterPaneCanBePresentedInOrientation:GS_STATUS_BAR_ORIENTATION()]) {
-            
-            // ensure that the master is visible according to the 'isMasterPaneShown...' property
-            _isMasterVisible = self.isMasterPaneShownOnInitialRotationToPortrait;
-            
-            // ensure that the delegate has a chance to add a bar button item if the view will be laid out in portrait
-            [self splitViewWillRotateToPortraitOrientation];
-            
-        }
-        
         _didLayoutViewControllers = YES;
-        
     }
     
     // update the layout for the current orientation
